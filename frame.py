@@ -8,15 +8,15 @@ from turtle import bgcolor
 monitor_flag = False
 
 def click_monitor_btn():
-    global monitor_flag
+    global monitor_flag #外部変数
 
     if (monitor_flag == False):     #待機中->監視中へ
-        monitor_btn['text'] = "監視中"
-        monitor_btn.config(bg="RED")
+        monitor_btn['text'] = "監視中"  #ボタン文字変更
+        monitor_btn.config(bg="RED")    #ボタン色変更
         monitor_flag = True
     else:   #監視中->待機中へ
-        monitor_btn["text"] = "待機中"
-        monitor_btn.config(bg="GREEN")
+        monitor_btn["text"] = "待機中"  #ボタン文字変更
+        monitor_btn.config(bg="GREEN")  #ボタン色変更
         monitor_flag = False
 
 def click_save_btn():
@@ -43,11 +43,11 @@ save_btn = tkinter.Button(root, text="保存", font=("System",8), command=click_
 reset_btn= tkinter.Button(root, text="取消", font=("System",8), command=click_reset_btn)
 
 #配置
-monitor_btn.grid(row=0, column=0, padx=12, pady=12 ,sticky=tkinter.S)
-label.grid(row=1, column=0, padx=12, sticky=tkinter.W)
-text.grid(row=2, column=0, padx=12, sticky=tkinter.W)
+label.grid(row=0, column=0, padx=12, sticky=tkinter.W)
+monitor_btn.grid(row=0, column=1, padx=12, sticky=tkinter.E)
+text.grid(row=2, column=0, columnspan=2, padx=12, sticky=tkinter.W)
 save_btn.grid(row=3, column=0, padx=12, pady=12, sticky=tkinter.W)
-reset_btn.grid(row=3, column=0, padx=12, pady=12, sticky=tkinter.E)
+reset_btn.grid(row=3, column=1, padx=12, pady=12, sticky=tkinter.E)
 
 
 root.mainloop()
