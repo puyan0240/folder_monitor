@@ -1,4 +1,5 @@
 from cProfile import label
+from cgitb import text
 from gzip import READ
 import tkinter
 from tkinter import ttk
@@ -19,11 +20,17 @@ def click_monitor_btn():
         monitor_btn.config(bg="GREEN")  #ボタン色変更
         monitor_flag = False
 
-def click_save_btn():
-    pass
+def click_save_btn():   #編集中テキストの保存
+    with open('path.txt','a') as f:
+        input = text.get('1.0', tkinter.END)
+        f.write(input)
 
-def click_reset_btn():
-    pass
+def click_reset_btn():  #テキストの編集中止、保存テキストの復元
+    text.delete('1.0', tkinter.END)
+    with open('path.txt', "r+") as f:
+        input = f.read()
+        text.insert('1.0', input)
+        #f.truncate(0)   #中身クリア
 
 
 
