@@ -22,6 +22,7 @@ def click_monitor_btn():
 
 def click_save_btn():   #編集中テキストの保存
     with open('path.txt','a') as f:
+        f.truncate(0)   #中身クリア
         input = text.get('1.0', tkinter.END)
         f.write(input)
 
@@ -30,8 +31,6 @@ def click_reset_btn():  #テキストの編集中止、保存テキストの復�
     with open('path.txt', "r+") as f:
         input = f.read()
         text.insert('1.0', input)
-        #f.truncate(0)   #中身クリア
-
 
 
 root = tkinter.Tk()
@@ -55,6 +54,12 @@ monitor_btn.grid(row=0, column=1, padx=12, sticky=tkinter.E)
 text.grid(row=2, column=0, columnspan=2, padx=12, sticky=tkinter.W)
 save_btn.grid(row=3, column=0, padx=12, pady=12, sticky=tkinter.W)
 reset_btn.grid(row=3, column=1, padx=12, pady=12, sticky=tkinter.E)
+
+
+#テキスト初期値設定:保存テキストの復元
+with open('path.txt', "r") as f:
+    input = f.read()
+    text.insert('1.0', input)
 
 
 root.mainloop()
