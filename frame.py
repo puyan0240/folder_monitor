@@ -1,9 +1,5 @@
-from cProfile import label
-from cgitb import text
-from gzip import READ
 import tkinter
 from tkinter import ttk
-from turtle import bgcolor
 
 
 monitor_flag = False
