@@ -1,9 +1,13 @@
+from importlib.resources import path
 import tkinter
 from tkinter import E, ttk
 import time
 import threading
 import socket
 import select
+import logging
+from watchdog.observers import Observer
+from watchdog.events import LoggingEventHandler
 
 monitor_flag = False
 task_id = False
@@ -22,12 +26,25 @@ def monitor_task():
                 for sock in ret:
                     if sock == server_socket:
                         data,addr = server_socket.recvfrom(256)
-                        msg = data.decode()
-                        #print(msg+","+str(addr))
+                        msg = data.decode('utf-8')
                         if msg == "start":
                             print("aaaaaaaaaaaa")
+                            with open('path.txt', "r") as f:
+                                path = f.read()
+                                path.replace('\n', '')
+                                #path.strip()
+                                #print(path)
+                                logging.basicConfig(level=logging.INFO,
+                                                format='%(asctime)s - %(message)s',
+                                                datefmt='%Y-%m-%d %H:%M:%S')
+                                event_handler = LoggingEventHandler()
+                                observer = Observer()
+                                observer.schedule(event_handler, path, recursive=True)
+                                observer.start()
                         elif msg == "stop":
                             print("bbbbbbbbbbbb")
+                            observer.stop()
+                            observer.join()
                         elif msg == "end":  #タスク終了
                             return  #終了       
             else:
@@ -41,7 +58,7 @@ def monitor_task():
 
 def send_cmd(msg):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    data = msg.encode()
+    data = msg.encode('utf-8')
     client_socket.sendto(data, ('127.0.0.1', 12345))
 
 
