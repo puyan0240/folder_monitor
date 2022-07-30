@@ -31,19 +31,17 @@ def monitor_task():
                             print("aaaaaaaaaaaa")
                             with open('path.txt', "r") as f:
                                 path = f.read()
-                                path.replace('\n', '')
-                                #path.strip()
-                                #print(path)
+                                path = path.replace('\n', '')   #改行コード削除
                                 logging.basicConfig(level=logging.INFO,
                                                 format='%(asctime)s - %(message)s',
                                                 datefmt='%Y-%m-%d %H:%M:%S')
                                 event_handler = LoggingEventHandler()
                                 observer = Observer()
-                                observer.schedule(event_handler, path, recursive=True)
-                                observer.start()
+                                observer.schedule(event_handler, path, recursive=True)  #監視登録
+                                observer.start()    #監視開始
                         elif msg == "stop":
                             print("bbbbbbbbbbbb")
-                            observer.stop()
+                            observer.stop() #監視終了
                             observer.join()
                         elif msg == "end":  #タスク終了
                             return  #終了       
