@@ -23,10 +23,10 @@ def click_save_btn():   #編集中テキストの保存
         f.write(input)
 
 def click_reset_btn():  #テキストの編集中止、保存テキストの復元
-    text.delete('1.0', tkinter.END)
+    text.delete('1.0', tkinter.END) #テキストBOXクリア
     with open('path.txt', "r+") as f:
         input = f.read()
-        text.insert('1.0', input)
+        text.insert('1.0', input)   #テキストBOXへ書き込み
 
 
 root = tkinter.Tk()
@@ -53,9 +53,11 @@ reset_btn.grid(row=3, column=1, padx=12, pady=12, sticky=tkinter.E)
 
 
 #テキスト初期値設定:保存テキストの復元
-with open('path.txt', "r") as f:
-    input = f.read()
-    text.insert('1.0', input)
-
+try:
+    with open('path.txt', "r") as f:
+        input = f.read()
+        text.insert('1.0', input)
+except:
+    pass    #ファイルが無い場合
 
 root.mainloop()
