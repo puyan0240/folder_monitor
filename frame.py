@@ -78,6 +78,7 @@ def click_close():
     #if messagebox.askokcancel("確認", "閉じますか?"):
     #    root.destroy()
     send_cmd("end") #タスク終了
+    task_id.join()  #タスク終了を待つ
     root.destroy()  #ウィンドウを破棄する
 
 
