@@ -1,37 +1,66 @@
+from dataclasses import dataclass
+from http import client
 import tkinter
-from tkinter import ttk
+from tkinter import E, ttk
 import time
 import threading
+import socket
+import select
 
 monitor_flag = False
 task_id = False
 
 
 def monitor_task():
-    global monitor_flag #外部変数
 
-    while monitor_flag: #モニター中??
-        time.sleep(0.5)   #500msecスリープ
-        print("a")
-    print("end")
-        
+    server_socket =socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    server_socket.bind(('127.0.0.1', 12345))
+
+    try:
+        readfs = set([server_socket])
+        while True:
+            ret, _, _ = select.select(readfs, [], [], 2)
+            if len(ret) != 0:
+                for sock in ret:
+                    if sock == server_socket:
+                        data,addr = server_socket.recvfrom(256)
+                        msg = data.decode()
+                        #print(msg+","+str(addr))
+                        if msg == "start":
+                            print("aaaaaaaaaaaa")
+                        elif msg == "stop":
+                            print("bbbbbbbbbbbb")
+                        
+            else:
+                pass
+                #print("a")
+
+            #print("a")
+    except Exception as e:
+        print(e)
+
+
+def send_cmd(msg):
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    data = msg.encode()
+    client_socket.sendto(data, ('127.0.0.1', 12345))
+
 
 
 def click_monitor_btn():
     global monitor_flag,task_id #外部変数
 
-    if (monitor_flag == False):     #待機中->監視中へ
+    if monitor_flag == False:     #待機中->監視中へ
         monitor_btn['text'] = "監視中"  #ボタン文字変更
         monitor_btn.config(bg="RED")    #ボタン色変更
         monitor_flag = True
-
-        task_id = threading.Thread(target=monitor_task) #スレッド生成
-        task_id.start() #スレッド開始
+        send_cmd("start")
 
     else:   #監視中->待機中へ
         monitor_btn["text"] = "待機中"  #ボタン文字変更
         monitor_btn.config(bg="GREEN")  #ボタン色変更
         monitor_flag = False
+        send_cmd("stop")
 
 def click_save_btn():   #編集中テキストの保存
     with open('path.txt','a') as f:
@@ -76,5 +105,11 @@ try:
         text.insert('1.0', input)
 except:
     pass    #ファイルが無い場合
+
+
+#タスク生成
+task_id = threading.Thread(target=monitor_task)
+task_id.start() #開始
+
 
 root.mainloop()
