@@ -1,5 +1,3 @@
-from dataclasses import dataclass
-from http import client
 import tkinter
 from tkinter import E, ttk
 import time
@@ -30,7 +28,8 @@ def monitor_task():
                             print("aaaaaaaaaaaa")
                         elif msg == "stop":
                             print("bbbbbbbbbbbb")
-                        
+                        elif msg == "end":  #タスク終了
+                            return  #終了       
             else:
                 pass
                 #print("a")
@@ -75,6 +74,13 @@ def click_reset_btn():  #テキストの編集中止、保存テキストの復�
         text.insert('1.0', input)   #テキストBOXへ書き込み
 
 
+def click_close():
+    #if messagebox.askokcancel("確認", "閉じますか?"):
+    #    root.destroy()
+    send_cmd("end") #タスク終了
+    root.destroy()  #ウィンドウを破棄する
+
+
 root = tkinter.Tk()
 root.title("Folder Monitor")
 root.geometry("600x400")
@@ -111,5 +117,5 @@ except:
 task_id = threading.Thread(target=monitor_task)
 task_id.start() #開始
 
-
+root.protocol("WM_DELETE_WINDOW", click_close)
 root.mainloop()
