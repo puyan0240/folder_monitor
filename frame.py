@@ -48,6 +48,9 @@ def monitor_task():
                             observer.join()
 
                         elif msg == "end":  #タスク終了
+                            if observer.is_alive() == True: #監視中??
+                                observer.stop() #監視終了
+                                observer.join()
                             return  #終了       
             else:
                 pass
