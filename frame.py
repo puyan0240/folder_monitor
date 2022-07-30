@@ -1,16 +1,33 @@
 import tkinter
 from tkinter import ttk
-
+import time
+import threading
 
 monitor_flag = False
+task_id = False
+
+
+def monitor_task():
+    global monitor_flag #外部変数
+
+    while monitor_flag: #モニター中??
+        time.sleep(0.5)   #500msecスリープ
+        print("a")
+    print("end")
+        
+
 
 def click_monitor_btn():
-    global monitor_flag #外部変数
+    global monitor_flag,task_id #外部変数
 
     if (monitor_flag == False):     #待機中->監視中へ
         monitor_btn['text'] = "監視中"  #ボタン文字変更
         monitor_btn.config(bg="RED")    #ボタン色変更
         monitor_flag = True
+
+        task_id = threading.Thread(target=monitor_task) #スレッド生成
+        task_id.start() #スレッド開始
+
     else:   #監視中->待機中へ
         monitor_btn["text"] = "待機中"  #ボタン文字変更
         monitor_btn.config(bg="GREEN")  #ボタン色変更
