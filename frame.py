@@ -4,7 +4,7 @@ import time
 import threading
 import socket
 import select
-import logging
+#import logging
 from watchdog.observers import Observer
 from watchdog.events import LoggingEventHandler
 import subprocess
@@ -19,8 +19,10 @@ class monitor_event_handker(LoggingEventHandler):   #フォルダ監視イベン
         with open('path.txt', "r") as f:
             path = f.read()
             path = path.replace('\n', '')   #改行コード削除
+            send_cmd("stop")    #ポップアップ中の監視イベント発動停止
             if messagebox.askokcancel("Folder Monitor", "開きますか?"):
                 subprocess.Popen(['explorer', path])
+            send_cmd("start")   #監視再開
 
     def on_any_event(self, event):
         return
@@ -50,8 +52,9 @@ def monitor_task():
                         data,addr = server_socket.recvfrom(256) #データ受信
                         msg = data.decode() #byte->文字列変換
 
+                        print("monitor_task() msg: "+msg)
+
                         if msg == "start":
-                            print("aaaaaaaaaaaa")
                             with open('path.txt', "r") as f:
                                 path = f.read()
                                 path = path.replace('\n', '')   #改行コード削除
@@ -64,7 +67,6 @@ def monitor_task():
                                 observer.start()    #監視開始
 
                         elif msg == "stop":
-                            print("bbbbbbbbbbbb")
                             observer.stop() #監視終了
                             observer.join()
 
