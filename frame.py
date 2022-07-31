@@ -96,12 +96,18 @@ def click_monitor_btn():
         monitor_btn['text'] = "監視中"  #ボタン文字変更
         monitor_btn.config(bg="RED")    #ボタン色変更
         monitor_flag = True
+        save_btn.config(state=tkinter.DISABLED)     #保存ボタン規制
+        reset_btn.config(state=tkinter.DISABLED)    #取消ボタン規制
+        text.config(state=tkinter.DISABLED) #テキストBOX規制
         send_cmd("start")
 
     else:   #監視中->待機中へ
         monitor_btn["text"] = "待機中"  #ボタン文字変更
         monitor_btn.config(bg="GREEN")  #ボタン色変更
         monitor_flag = False
+        save_btn.config(state=tkinter.NORMAL)   #保存ボタン規制解除
+        reset_btn.config(state=tkinter.NORMAL)  #取消ボタン規制解除
+        text.config(state=tkinter.NORMAL)   #テキストBOX規制解除
         send_cmd("stop")
 
 def click_save_btn():   #編集中テキストの保存
