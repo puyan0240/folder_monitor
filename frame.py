@@ -1,6 +1,5 @@
-from importlib.resources import path
 import tkinter
-from tkinter import E, ttk
+from tkinter import E, ttk, messagebox
 import time
 import threading
 import socket
@@ -8,9 +7,31 @@ import select
 import logging
 from watchdog.observers import Observer
 from watchdog.events import LoggingEventHandler
+import subprocess
 
 monitor_flag = False
 task_id = False
+
+
+class monitor_event_handker(LoggingEventHandler):   #フォルダ監視イベントハンドラー
+    def monitor_event(self, event):
+        print("編集:"+ event.src_path)
+        with open('path.txt', "r") as f:
+            path = f.read()
+            path = path.replace('\n', '')   #改行コード削除
+            if messagebox.askokcancel("Folder Monitor", "開きますか?"):
+                subprocess.Popen(['explorer', path])
+
+    def on_any_event(self, event):
+        return
+    def on_closed(self, event):
+        return
+    def on_created(self, event):
+        self.monitor_event(event)
+    def on_modified(self, event):
+        return
+    def on_moved(self, event):
+        self.monitor_event(event)
 
 
 def monitor_task():
@@ -34,10 +55,10 @@ def monitor_task():
                             with open('path.txt', "r") as f:
                                 path = f.read()
                                 path = path.replace('\n', '')   #改行コード削除
-                                logging.basicConfig(level=logging.INFO,
-                                                format='%(asctime)s - %(message)s',
-                                                datefmt='%Y-%m-%d %H:%M:%S')
-                                event_handler = LoggingEventHandler()
+                                #logging.basicConfig(level=logging.INFO,
+                                #                format='%(asctime)s - %(message)s',
+                                #                datefmt='%Y-%m-%d %H:%M:%S')
+                                event_handler = monitor_event_handker()
                                 observer = Observer()
                                 observer.schedule(event_handler, path, recursive=True)  #監視登録
                                 observer.start()    #監視開始
