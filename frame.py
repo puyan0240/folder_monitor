@@ -40,6 +40,7 @@ def monitor_task():
 
     server_socket =socket.socket(socket.AF_INET, socket.SOCK_DGRAM) #UDPソケット生成
     server_socket.bind(('127.0.0.1', 12345))
+    observer_tbl = {}
 
     try:
         readfs = set([server_socket])   #監視対象登録
@@ -56,24 +57,28 @@ def monitor_task():
 
                         if msg == "start":
                             with open('path.txt', "r") as f:
-                                path = f.read()
-                                path = path.replace('\n', '')   #改行コード削除
-                                #logging.basicConfig(level=logging.INFO,
-                                #                format='%(asctime)s - %(message)s',
-                                #                datefmt='%Y-%m-%d %H:%M:%S')
-                                event_handler = monitor_event_handker()
-                                observer = Observer()
-                                observer.schedule(event_handler, path, recursive=True)  #監視登録
-                                observer.start()    #監視開始
+                                path_list = f.read()
+                                path_list = path_list.splitlines()
+                                print(path_list)
+                                for path in path_list:  #登録分だけ監視設定をする
+                                    path = path.replace('\n', '')   #改行コード削除
+                                    print(path)
+
+                                    event_handler = monitor_event_handker()
+                                    observer_tbl[path] = Observer()
+                                    observer_tbl[path].schedule(event_handler, path, recursive=True)  #監視登録
+                                    observer_tbl[path].start()    #監視開始
 
                         elif msg == "stop":
-                            observer.stop() #監視終了
-                            observer.join()
-
-                        elif msg == "end":  #タスク終了
-                            if observer.is_alive() == True: #監視中??
+                            for observer in observer_tbl.values():
                                 observer.stop() #監視終了
                                 observer.join()
+
+                        elif msg == "end":  #タスク終了
+                            for observer in observer_tbl.values():
+                                if observer.is_alive() == True: #監視中??
+                                    observer.stop() #監視終了
+                                    observer.join()
                             return  #終了       
             else:
                 pass
