@@ -93,6 +93,7 @@ def send_cmd(msg):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)    #UDPソケット生成
     data = msg.encode() #文字列->byte変換
     client_socket.sendto(data, ('127.0.0.1', 12345))    #コマンド送信
+    client_socket.close()
 
 
 
