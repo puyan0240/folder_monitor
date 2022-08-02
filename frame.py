@@ -15,14 +15,23 @@ task_id = False
 
 class monitor_event_handker(LoggingEventHandler):   #フォルダ監視イベントハンドラー
     def monitor_event(self, event):
-        print("編集:"+ event.src_path)
+        event_path = str(event.src_path)
+        print("編集:"+ event_path)
         with open('path.txt', "r") as f:
-            path = f.read()
-            path = path.replace('\n', '')   #改行コード削除
-            send_cmd("stop")    #ポップアップ中の監視イベント発動停止
-            if messagebox.askokcancel("Folder Monitor", "開きますか?"):
-                subprocess.Popen(['explorer', path])
-            send_cmd("start")   #監視再開
+            path_list = f.read()
+            path_list = path_list.splitlines()
+            print(path_list)
+
+            for path in path_list:
+                if  event_path.startswith(path) == True:
+                    print("HIT:"+path)
+
+#            path = path.replace('\n', '')   #改行コード削除
+#            send_cmd("stop","")    #ポップアップ中の監視イベント発動停止
+#            if messagebox.askokcancel("Folder Monitor", "開きますか?"):
+#                subprocess.Popen(['explorer', path])
+#            send_cmd("start","")   #監視再開
+
 
     def on_any_event(self, event):
         return
@@ -51,11 +60,15 @@ def monitor_task():
                 for sock in ret:
                     if sock == server_socket:
                         data,addr = server_socket.recvfrom(256) #データ受信
-                        msg = data.decode() #byte->文字列変換
+                        data = data.decode() #byte->文字列変換
+                        data = data.splitlines()
+                        cmd  = data[0]
+                        print("monitor_task() cmd: "+cmd)
+                        if len(data) > 1:
+                            path = data[1]
+                            print("monitor_task() path: "+path)
 
-                        print("monitor_task() msg: "+msg)
-
-                        if msg == "start":
+                        if cmd == "start":
                             with open('path.txt', "r") as f:
                                 path_list = f.read()
                                 path_list = path_list.splitlines()
@@ -69,12 +82,12 @@ def monitor_task():
                                     observer_tbl[path].schedule(event_handler, path, recursive=True)  #監視登録
                                     observer_tbl[path].start()    #監視開始
 
-                        elif msg == "stop":
+                        elif cmd == "stop":
                             for observer in observer_tbl.values():
                                 observer.stop() #監視終了
                                 observer.join()
 
-                        elif msg == "end":  #タスク終了
+                        elif cmd == "end":  #タスク終了
                             for observer in observer_tbl.values():
                                 if observer.is_alive() == True: #監視中??
                                     observer.stop() #監視終了
@@ -89,9 +102,9 @@ def monitor_task():
         print(e)
 
 
-def send_cmd(msg):
+def send_cmd(cmd, path):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)    #UDPソケット生成
-    data = msg.encode() #文字列->byte変換
+    data = (cmd+'\n'+path).encode() #文字列->byte変換
     client_socket.sendto(data, ('127.0.0.1', 12345))    #コマンド送信
     client_socket.close()
 
@@ -107,7 +120,7 @@ def click_monitor_btn():
         save_btn.config(state=tkinter.DISABLED)     #保存ボタン規制
         reset_btn.config(state=tkinter.DISABLED)    #取消ボタン規制
         text.config(state=tkinter.DISABLED) #テキストBOX規制
-        send_cmd("start")
+        send_cmd("start", "")
 
     else:   #監視中->待機中へ
         monitor_btn["text"] = "待機中"  #ボタン文字変更
@@ -116,7 +129,7 @@ def click_monitor_btn():
         save_btn.config(state=tkinter.NORMAL)   #保存ボタン規制解除
         reset_btn.config(state=tkinter.NORMAL)  #取消ボタン規制解除
         text.config(state=tkinter.NORMAL)   #テキストBOX規制解除
-        send_cmd("stop")
+        send_cmd("stop", "")
 
 def click_save_btn():   #編集中テキストの保存
     with open('path.txt','a') as f:
@@ -134,7 +147,7 @@ def click_reset_btn():  #テキストの編集中止、保存テキストの復�
 def click_close():
     #if messagebox.askokcancel("確認", "閉じますか?"):
     #    root.destroy()
-    send_cmd("end") #タスク終了
+    send_cmd("end", "") #タスク終了
     task_id.join()  #タスク終了を待つ
     root.destroy()  #ウィンドウを破棄する
 
