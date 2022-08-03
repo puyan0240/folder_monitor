@@ -23,15 +23,25 @@ class monitor_event_handker(LoggingEventHandler):   #フォルダ監視イベン
             print(path_list)
 
             for path in path_list:
-                if  event_path.startswith(path) == True:
-                    print("HIT:"+path)
+                hit_count=0
+                path_part = path.split('\\')
+                event_path_part = event_path.split('\\')
 
-#            path = path.replace('\n', '')   #改行コード削除
-#            send_cmd("stop","")    #ポップアップ中の監視イベント発動停止
-#            if messagebox.askokcancel("Folder Monitor", "開きますか?"):
-#                subprocess.Popen(['explorer', path])
-#            send_cmd("start","")   #監視再開
+                for i in range(len(path_part)):
+                    if path_part[i] == event_path_part[i]:
+                        #print(path_part[i])
+                        hit_count += 1
+                    else:
+                        #print("bk")
+                        break
 
+                #print("hit_count:"+str(hit_count))
+                if hit_count == len(path_part):
+                    send_cmd("stop", path)  #ポップアップ中の監視イベント発動停止
+                    if messagebox.askokcancel("Folder Monitor", "開きますか?"):
+                        subprocess.Popen(['explorer', path])
+                    send_cmd("start", path)   #監視再開
+                    
 
     def on_any_event(self, event):
         return
