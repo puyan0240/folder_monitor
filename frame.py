@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 import tkinter
 from tkinter import E, ttk, messagebox
 import time
@@ -29,16 +30,15 @@ class monitor_event_handker(LoggingEventHandler):   #フォルダ監視イベン
 
                 for i in range(len(path_part)):
                     if path_part[i] == event_path_part[i]:
-                        #print(path_part[i])
                         hit_count += 1
                     else:
-                        #print("bk")
                         break
 
                 #print("hit_count:"+str(hit_count))
                 if hit_count == len(path_part):
+                    title = path_part[len(path_part) -1]    #直上のフォルダ名をTITL表示
                     send_cmd("stop", path)  #ポップアップ中の監視イベント発動停止
-                    if messagebox.askokcancel("Folder Monitor", "開きますか?"):
+                    if messagebox.askokcancel(title, "開きますか?"):
                         subprocess.Popen(['explorer', path])
                     send_cmd("start", path)   #監視再開
                     
@@ -77,6 +77,8 @@ def monitor_task():
                         if len(data) > 1:
                             path = data[1]
                             print("monitor_task() path: "+path)
+                        else:
+                            path = ""
 
                         if cmd == "start":
                             with open('path.txt', "r") as f:
@@ -93,7 +95,12 @@ def monitor_task():
                                     observer_tbl[path].start()    #監視開始
 
                         elif cmd == "stop":
-                            for observer in observer_tbl.values():
+                            if path == "":
+                                for observer in observer_tbl.values():
+                                    observer.stop() #監視終了
+                                    observer.join()
+                            else:
+                                observer = observer_tbl[path]
                                 observer.stop() #監視終了
                                 observer.join()
 
@@ -105,9 +112,7 @@ def monitor_task():
                             return  #終了       
             else:
                 pass
-                #print("a")
 
-            #print("a")
     except Exception as e:
         print(e)
 
@@ -117,7 +122,6 @@ def send_cmd(cmd, path):
     data = (cmd+'\n'+path).encode() #文字列->byte変換
     client_socket.sendto(data, ('127.0.0.1', 12345))    #コマンド送信
     client_socket.close()
-
 
 
 def click_monitor_btn():
@@ -141,11 +145,13 @@ def click_monitor_btn():
         text.config(state=tkinter.NORMAL)   #テキストBOX規制解除
         send_cmd("stop", "")
 
+
 def click_save_btn():   #編集中テキストの保存
     with open('path.txt','a') as f:
         f.truncate(0)   #中身クリア
         input = text.get('1.0', tkinter.END)
         f.write(input)
+
 
 def click_reset_btn():  #テキストの編集中止、保存テキストの復元
     text.delete('1.0', tkinter.END) #テキストBOXクリア
