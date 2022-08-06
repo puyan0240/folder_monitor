@@ -93,12 +93,13 @@ def monitor_task():
 
                                 for path in path_list:  #登録分だけ監視設定をする
                                     path = path.replace('\n', '')   #改行コード削除
-                                    print(path)
+                                    print("path:"+path)
 
-                                    event_handler = monitor_event_handker()
-                                    observer_tbl[path] = Observer()
-                                    observer_tbl[path].schedule(event_handler, path, recursive=True)  #監視登録
-                                    observer_tbl[path].start()    #監視開始
+                                    if path != "":  #設定がある場合に限り監視する
+                                        event_handler = monitor_event_handker()
+                                        observer_tbl[path] = Observer()
+                                        observer_tbl[path].schedule(event_handler, path, recursive=True)  #監視登録
+                                        observer_tbl[path].start()    #監視開始
 
                         elif cmd == "stop":
                             if path == "":
