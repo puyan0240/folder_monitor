@@ -1,4 +1,5 @@
 from asyncio.windows_events import NULL
+from genericpath import isfile
 import tkinter
 from tkinter import E, ttk, messagebox
 import time
@@ -9,6 +10,7 @@ import select
 from watchdog.observers import Observer
 from watchdog.events import LoggingEventHandler
 import subprocess
+import os
 
 monitor_flag = False
 task_id = False
@@ -155,9 +157,10 @@ def click_save_btn():   #編集中テキストの保存
 
 def click_reset_btn():  #テキストの編集中止、保存テキストの復元
     text.delete('1.0', tkinter.END) #テキストBOXクリア
-    with open('path.txt', "r+") as f:
-        input = f.read()
-        text.insert('1.0', input)   #テキストBOXへ書き込み
+    if os.path.isfile('path.txt') == True:  #ファイル有無を確認
+        with open('path.txt', "r+") as f:
+            input = f.read()
+            text.insert('1.0', input)   #テキストBOXへ書き込み
 
 
 def click_close():
