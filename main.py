@@ -21,11 +21,11 @@ task_id = False
 class monitor_event_handker(LoggingEventHandler):   #フォルダ監視イベントハンドラー
     def monitor_event(self, event):
         event_path = str(event.src_path)
-        print("編集:"+ event_path)
+        #print("編集:"+ event_path)
         with open(PATH_FILE, "r") as f:
             path_list = f.read()
             path_list = path_list.splitlines()
-            print(path_list)
+            #print(path_list)
 
             for path in path_list:
                 hit_count=0
@@ -77,10 +77,10 @@ def monitor_task():
                         data = data.decode() #byte->文字列変換
                         data = data.splitlines()
                         cmd  = data[0]
-                        print("monitor_task() cmd: "+cmd)
+                        #print("monitor_task() cmd: "+cmd)
                         if len(data) > 1:
                             path = data[1]
-                            print("monitor_task() path: "+path)
+                            #print("monitor_task() path: "+path)
                         else:
                             path = ""
 
@@ -91,11 +91,11 @@ def monitor_task():
                             with open(PATH_FILE, "r") as f:
                                 path_list = f.read()
                                 path_list = path_list.splitlines()
-                                print(path_list)
+                                #print(path_list)
 
                                 for path in path_list:  #登録分だけ監視設定をする
                                     path = path.replace('\n', '')   #改行コード削除
-                                    print("path:"+path)
+                                    #print("path:"+path)
 
                                     if path != "":  #設定がある場合に限り監視する
                                         event_handler = monitor_event_handker()
