@@ -12,6 +12,8 @@ from watchdog.events import LoggingEventHandler
 import subprocess
 import os
 
+PATH_FILE = 'path.txt'
+
 monitor_flag = False
 task_id = False
 
@@ -20,7 +22,7 @@ class monitor_event_handker(LoggingEventHandler):   #フォルダ監視イベン
     def monitor_event(self, event):
         event_path = str(event.src_path)
         print("編集:"+ event_path)
-        with open('path.txt', "r") as f:
+        with open(PATH_FILE, "r") as f:
             path_list = f.read()
             path_list = path_list.splitlines()
             print(path_list)
@@ -83,10 +85,10 @@ def monitor_task():
                             path = ""
 
                         if cmd == "start":
-                            if os.path.isfile('path.txt') == False:  #ファイル有無を確認
+                            if os.path.isfile(PATH_FILE) == False:  #ファイル有無を確認
                                 moni_file_write()
 
-                            with open('path.txt', "r") as f:
+                            with open(PATH_FILE, "r") as f:
                                 path_list = f.read()
                                 path_list = path_list.splitlines()
                                 print(path_list)
@@ -154,7 +156,7 @@ def click_monitor_btn():
 
 
 def moni_file_write():  #ファイル書き込み関数
-    with open('path.txt','a') as f:
+    with open(PATH_FILE,'a') as f:
         f.truncate(0)   #中身クリア
         input = text.get('1.0', tkinter.END)
         f.write(input)
@@ -166,8 +168,8 @@ def click_save_btn():   #編集中テキストの保存
 
 def click_reset_btn():  #テキストの編集中止、保存テキストの復元
     text.delete('1.0', tkinter.END) #テキストBOXクリア
-    if os.path.isfile('path.txt') == True:  #ファイル有無を確認
-        with open('path.txt', "r+") as f:
+    if os.path.isfile(PATH_FILE) == True:  #ファイル有無を確認
+        with open(PATH_FILE, "r+") as f:
             input = f.read()
             text.insert('1.0', input)   #テキストBOXへ書き込み
 
@@ -205,7 +207,7 @@ reset_btn.grid(row=3, column=1, padx=12, pady=12, sticky=tkinter.E)
 
 #テキスト初期値設定:保存テキストの復元
 try:
-    with open('path.txt', "r") as f:
+    with open(PATH_FILE, "r") as f:
         input = f.read()
         text.insert('1.0', input)
 except:
