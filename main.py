@@ -83,18 +83,20 @@ def monitor_task():
                             path = ""
 
                         if cmd == "start":
-                            with open('path.txt', "r") as f:
-                                path_list = f.read()
-                                path_list = path_list.splitlines()
-                                print(path_list)
-                                for path in path_list:  #登録分だけ監視設定をする
-                                    path = path.replace('\n', '')   #改行コード削除
-                                    print(path)
+                            if os.path.isfile('path.txt') == True:  #ファイル有無を確認
+                                with open('path.txt', "r") as f:
+                                    path_list = f.read()
+                                    path_list = path_list.splitlines()
+                                    print(path_list)
 
-                                    event_handler = monitor_event_handker()
-                                    observer_tbl[path] = Observer()
-                                    observer_tbl[path].schedule(event_handler, path, recursive=True)  #監視登録
-                                    observer_tbl[path].start()    #監視開始
+                                    for path in path_list:  #登録分だけ監視設定をする
+                                        path = path.replace('\n', '')   #改行コード削除
+                                        print(path)
+
+                                        event_handler = monitor_event_handker()
+                                        observer_tbl[path] = Observer()
+                                        observer_tbl[path].schedule(event_handler, path, recursive=True)  #監視登録
+                                        observer_tbl[path].start()    #監視開始
 
                         elif cmd == "stop":
                             if path == "":
