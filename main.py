@@ -1,5 +1,3 @@
-from asyncio.windows_events import NULL
-from genericpath import isfile
 import tkinter
 from tkinter import E, ttk, messagebox
 import time
@@ -134,6 +132,8 @@ def click_monitor_btn():
     global monitor_flag,task_id #外部変数
 
     if monitor_flag == False:     #待機中->監視中へ
+        moni_path_write()   #テキストBOXとファイル内容を同期させる
+
         monitor_btn['text'] = "監視中"  #ボタン文字変更
         monitor_btn.config(bg="RED")    #ボタン色変更
         monitor_flag = True
@@ -152,20 +152,22 @@ def click_monitor_btn():
         send_cmd("stop", "")
 
 
-def moni_path_write():  #ファイル書き込み関数
+#テキストBOXとファイル内容を同期させる
+def moni_path_write():
 
     #テキストBOXとファイル内容を取得
-    if os.path.isfile(PATH_FILE) == False:  #ファイル有無を確認
-        input_file = f.read()
+    if os.path.isfile(PATH_FILE) == True:  #ファイル有無を確認
+        with open(PATH_FILE,'r') as f:
+            input_file = f.read()
     else:
         input_file = ""
-    input_text = text.get('1.0', tkinter.END)
+    input_text = text.get('1.0', tkinter.END+'-1c') #最後の改行コードは対象外
    
     #テキストBOXとファイル内容を比較
     if input_file != input_text:
         with open(PATH_FILE,'a') as f:
             f.truncate(0)   #ファイルの中身をクリア
-            input_text = input.replace('/', '\\')    #文字置換(Unix系のフォルダ区切り文字'/'をwindows型に変換)
+            input_text = input_text.replace('/', '\\')    #文字置換(Unix系のフォルダ区切り文字'/'をwindows型に変換)
             f.write(input_text)
 
             #テキストBOXの内容を更新
