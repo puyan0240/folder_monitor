@@ -83,20 +83,22 @@ def monitor_task():
                             path = ""
 
                         if cmd == "start":
-                            if os.path.isfile('path.txt') == True:  #ファイル有無を確認
-                                with open('path.txt', "r") as f:
-                                    path_list = f.read()
-                                    path_list = path_list.splitlines()
-                                    print(path_list)
+                            if os.path.isfile('path.txt') == False:  #ファイル有無を確認
+                                moni_file_write()
 
-                                    for path in path_list:  #登録分だけ監視設定をする
-                                        path = path.replace('\n', '')   #改行コード削除
-                                        print(path)
+                            with open('path.txt', "r") as f:
+                                path_list = f.read()
+                                path_list = path_list.splitlines()
+                                print(path_list)
 
-                                        event_handler = monitor_event_handker()
-                                        observer_tbl[path] = Observer()
-                                        observer_tbl[path].schedule(event_handler, path, recursive=True)  #監視登録
-                                        observer_tbl[path].start()    #監視開始
+                                for path in path_list:  #登録分だけ監視設定をする
+                                    path = path.replace('\n', '')   #改行コード削除
+                                    print(path)
+
+                                    event_handler = monitor_event_handker()
+                                    observer_tbl[path] = Observer()
+                                    observer_tbl[path].schedule(event_handler, path, recursive=True)  #監視登録
+                                    observer_tbl[path].start()    #監視開始
 
                         elif cmd == "stop":
                             if path == "":
@@ -150,11 +152,15 @@ def click_monitor_btn():
         send_cmd("stop", "")
 
 
-def click_save_btn():   #編集中テキストの保存
+def moni_file_write():  #ファイル書き込み関数
     with open('path.txt','a') as f:
         f.truncate(0)   #中身クリア
         input = text.get('1.0', tkinter.END)
         f.write(input)
+
+
+def click_save_btn():   #編集中テキストの保存
+    moni_file_write()   #ファイルへ書き込む
 
 
 def click_reset_btn():  #テキストの編集中止、保存テキストの復元
