@@ -159,6 +159,7 @@ def moni_file_write():  #ファイル書き込み関数
     with open(PATH_FILE,'a') as f:
         f.truncate(0)   #中身クリア
         input = text.get('1.0', tkinter.END)
+        input = input.replace('/', '\\')    #文字置換(Unix系のフォルダ区切り文字'/'をwindows型に変換)
         f.write(input)
 
 
