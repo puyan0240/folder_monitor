@@ -173,9 +173,6 @@ def moni_path_write():
             #テキストBOXの内容を更新
             text.delete('1.0', tkinter.END) #テキストBOXクリア
             text.insert('1.0', input_text)   #テキストBOXへ書き込み
-    else:
-        print("変化なし")
-
 
 
 def click_save_btn():   #編集中テキストの保存
