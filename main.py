@@ -93,10 +93,14 @@ def monitor_task():
                                     #print("path:"+path)
 
                                     if path != "":  #設定がある場合に限り監視する
-                                        event_handler = monitor_event_handker()
-                                        observer_tbl[path] = Observer()
-                                        observer_tbl[path].schedule(event_handler, path, recursive=True)  #監視登録
-                                        observer_tbl[path].start()    #監視開始
+                                        try:
+                                            event_handler = monitor_event_handker()
+                                            observer_tbl[path] = Observer()
+                                            observer_tbl[path].schedule(event_handler, path, recursive=True)  #監視登録
+                                            observer_tbl[path].start()    #監視開始
+                                        except:
+                                            pass
+                                            
 
                         elif cmd == "stop":
                             if path == "":
