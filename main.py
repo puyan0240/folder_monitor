@@ -85,9 +85,6 @@ def monitor_task():
                             path = ""
 
                         if cmd == "start":
-                            if os.path.isfile(PATH_FILE) == False:  #ファイル有無を確認
-                                moni_file_write()
-
                             with open(PATH_FILE, "r") as f:
                                 path_list = f.read()
                                 path_list = path_list.splitlines()
@@ -155,16 +152,32 @@ def click_monitor_btn():
         send_cmd("stop", "")
 
 
-def moni_file_write():  #ファイル書き込み関数
-    with open(PATH_FILE,'a') as f:
-        f.truncate(0)   #中身クリア
-        input = text.get('1.0', tkinter.END)
-        input = input.replace('/', '\\')    #文字置換(Unix系のフォルダ区切り文字'/'をwindows型に変換)
-        f.write(input)
+def moni_path_write():  #ファイル書き込み関数
+
+    #テキストBOXとファイル内容を取得
+    if os.path.isfile(PATH_FILE) == False:  #ファイル有無を確認
+        input_file = f.read()
+    else:
+        input_file = ""
+    input_text = text.get('1.0', tkinter.END)
+   
+    #テキストBOXとファイル内容を比較
+    if input_file != input_text:
+        with open(PATH_FILE,'a') as f:
+            f.truncate(0)   #ファイルの中身をクリア
+            input_text = input.replace('/', '\\')    #文字置換(Unix系のフォルダ区切り文字'/'をwindows型に変換)
+            f.write(input_text)
+
+            #テキストBOXの内容を更新
+            text.delete('1.0', tkinter.END) #テキストBOXクリア
+            text.insert('1.0', input_text)   #テキストBOXへ書き込み
+    else:
+        print("変化なし")
+
 
 
 def click_save_btn():   #編集中テキストの保存
-    moni_file_write()   #ファイルへ書き込む
+    moni_path_write()   #ファイルへ書き込む
 
 
 def click_reset_btn():  #テキストの編集中止、保存テキストの復元
