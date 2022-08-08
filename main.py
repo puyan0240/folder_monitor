@@ -40,6 +40,8 @@ class monitor_event_handker(LoggingEventHandler):   #フォルダ監視イベン
                 if hit_count == len(path_part):
                     title = path_part[len(path_part) -1]    #直上のフォルダ名をTITL表示
                     send_cmd("stop", path)  #ポップアップ中の監視イベント発動停止
+
+                    root.attributes("-topmost", True)   #これをするとメッセージBOXが強制前面にくる
                     if messagebox.askokcancel(title, "開きますか?"):
                         subprocess.Popen(['explorer', path])
                     send_cmd("start", path)   #監視再開
